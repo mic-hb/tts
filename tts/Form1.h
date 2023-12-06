@@ -137,6 +137,7 @@
 #include <vector>
 #include <Windows.h>
 #include "PuzzleLetter.h"
+#include <string>
 
 namespace tts {
 
@@ -150,6 +151,77 @@ namespace tts {
 	public ref class Form1 : public System::Windows::Forms::Form
 	{
 	public:
+		ref class Node {
+		public:
+			String^ key;
+			Node^ left;
+			Node^ right;
+
+			Node(String^ data) {
+				key = data;
+				left = nullptr;
+				right = nullptr;
+			}
+		};
+		ref class BST {
+		private:
+			Node^ root;
+
+			Node^ insertRecursive(Node^ root, String^ key) {
+				if (root == nullptr) {
+					return gcnew Node(key);
+				}
+
+				if (String::Compare(key, root->key) < 0) {
+					root->left = insertRecursive(root->left, key);
+				}
+				else if (String::Compare(key, root->key) > 0) {
+					root->right = insertRecursive(root->right, key);
+				}
+
+				return root;
+			}
+
+			Node^ findRecursive(Node^ root, String^ key) {
+				if (root == nullptr || root->key == key) {
+					return root;
+				}
+
+				if (String::Compare(key, root->key) < 0) {
+					return findRecursive(root->left, key);
+				}
+				else {
+					return findRecursive(root->right, key);
+				}
+			}
+
+			void inOrderTraversal(Node^ root) {
+				if (root != nullptr) {
+					inOrderTraversal(root->left);
+					MessageBox::Show(root->key + " ");
+					inOrderTraversal(root->right);
+				}
+			}
+
+		public:
+			BST() {
+				root = nullptr;
+			}
+
+			void insert(String^ key) {
+				root = insertRecursive(root, key);
+			}
+
+			void displayInOrder() {
+				MessageBox::Show("In-order traversal of the BST: ");
+				inOrderTraversal(root);
+				Console::WriteLine();
+			}
+			Node^ find(String^ key) {
+				return findRecursive(root, key);
+			}
+
+		};
 		Form1(void)
 		{
 			InitializeComponent();
@@ -169,11 +241,13 @@ namespace tts {
 		}
 
 	private:
-		System::ComponentModel::Container^ components;
-		array<PuzzleLetter^, 2>^ puzzleGrid;
-		array<String^>^ hiddenWords;
-	private: System::Windows::Forms::FontDialog^ fontDialog1;
-		   array<String^>^ foundWords;
+			
+
+			System::ComponentModel::Container^ components;
+			array<PuzzleLetter^, 2>^ puzzleGrid;
+			array<String^>^ hiddenWords;
+			private: System::Windows::Forms::FontDialog^ fontDialog1;
+			array<String^>^ foundWords;
 
 		   void InitializeHiddenWords() {
 			   hiddenWords = gcnew array<String^>{"CAT", "DOG", "RAT"};
@@ -315,6 +389,9 @@ namespace tts {
 #pragma region Windows Form Designer generated code
 		   void InitializeComponent(void)
 		   {
+			   
+
+
 			   this->fontDialog1 = (gcnew System::Windows::Forms::FontDialog());
 			   this->SuspendLayout();
 			   // 
@@ -327,6 +404,29 @@ namespace tts {
 			   this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
 			   this->Text = L"Form1";
 			   this->ResumeLayout(false);
+			   BST^ tree = gcnew BST();
+
+
+			   //cara insert
+			   tree->insert("apple");
+			   tree->insert("banana");
+			   tree->insert("orange");
+			   tree->insert("grape");
+			   tree->insert("kiwi");
+
+			   //display semua dengan urutan inorderTraversal
+			   tree->displayInOrder();
+
+			   //find di dalam tree
+			   String^ x = "oranges";
+			   Node^ foundNode = tree->find(x);
+
+			   if (foundNode != nullptr) {
+				   MessageBox::Show("Found: " + foundNode->key);
+			   }
+			   else {
+				   MessageBox::Show(x + " not found.");
+			   }
 
 		   }
 #pragma endregion
