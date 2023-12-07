@@ -27,6 +27,8 @@ namespace tts {
 			Text = "Word Puzzle Game";
 			InitializeHiddenWords();
 			InitializePuzzleGrid();
+
+			Size = System::Drawing::Size(50 * puzzleGrid->GetLength(0) + 100, 50 * puzzleGrid->GetLength(1) + 100);
 		}
 
 	protected:
@@ -67,10 +69,10 @@ namespace tts {
 				   puzzle_dimension = 6;
 			   }
 			   else if (difficulty == "Medium") {
-				   puzzle_dimension = 10;
+				   puzzle_dimension = 8;
 			   }
 			   else if (difficulty == "Hard") {
-				   puzzle_dimension = 15;
+				   puzzle_dimension = 12;
 			   }
 
 			   // Inisialisasi array 2 dimensi untuk puzzle
@@ -82,61 +84,42 @@ namespace tts {
 
 			   // Random penempatan setiap kata di array hiddenWords
 			   for each (String ^ word in hiddenWords) {
-				   int max_position = puzzle_dimension - word->Length;	// Maksimal posisi buat huruf pertama setiap kata
-				   int x = 0;
-				   int y = 0;
-				   int direction = 0;	// 0 = kanan, 1 = turun, 2 = diagonal kanan bawah
-				   bool isValid;		// ngecek apakah posisi yang dipilih valid atau tidak
-				   int tries = 0;		// safety measure, kalau ada kata yang ga bisa dimasukin ke puzzle langsung diskip biar ga infinite loop
+				   int wordLength = word->Length;
+
+				   int x, y, direction;
+				   bool isValid;
+				   int tries = 0;
 
 				   do {
-					   // random x, y dan direction
-					   x = rand() % max_position;
-					   y = rand() % max_position;
+					   // Random starting position and direction
+					   x = rand() % puzzle_dimension;
+					   y = rand() % puzzle_dimension;
 					   direction = rand() % 3;
 
-					   // Pengecekan valid atau tidak
+					   // Check if the word fits in the chosen direction
 					   isValid = true;
-					   if (x > max_position || y > max_position) {		// ini ngecek apakah posisi yang dipilih masih muat buat diagonal atau tdk
-						   if (direction == 2) {
+					   for (int i = 0; i < wordLength; i++) {
+						   int newX = x, newY = y;
+
+						   if (direction == 0) {
+							   newX += i;
+						   }
+						   else if (direction == 1) {
+							   newY += i;
+						   }
+						   else if (direction == 2) {
+							   newX += i;
+							   newY += i;
+						   }
+
+						   if (newX >= puzzle_dimension || newY >= puzzle_dimension || puzzleGrid[newX, newY] != nullptr) {
 							   isValid = false;
-						   }
-					   }
-					   if (puzzleGrid[x, y] != nullptr) {				// kalau posisi yang dipilih udah ada hurufnya, cek apakah hurufnya sama atau tidak
-						   if (puzzleGrid[x, y]->Text != word[0].ToString()) {
-							   isValid = false;
-						   }
-					   }
-					   if (direction == 0) {							// cek masing-masing hurufnya
-						   for (int i = 0; i < word->Length; i++) {		// kalau misal arahnya horizontal, dan ada huruf yang ga sama atau udah ga muat, jadinya invalid
-							   if (puzzleGrid[x + i, y] != nullptr) {
-								   if (puzzleGrid[x + i, y]->Text != word[i].ToString()) {
-									   isValid = false;
-								   }
-							   }
-						   }
-					   }
-					   else if (direction == 1) {
-						   for (int i = 0; i < word->Length; i++) {
-							   if (puzzleGrid[x, y + i] != nullptr) {
-								   if (puzzleGrid[x, y + i]->Text != word[i].ToString()) {
-									   isValid = false;
-								   }
-							   }
-						   }
-					   }
-					   else if (direction == 2) {
-						   for (int i = 0; i < word->Length; i++) {
-							   if (puzzleGrid[x + i, y + i] != nullptr) {
-								   if (puzzleGrid[x + i, y + i]->Text != word[i].ToString()) {
-									   isValid = false;
-								   }
-							   }
+							   break;
 						   }
 					   }
 
 					   tries++;
-					   if (tries == 10) goto nextWord;
+					   if (tries == 100) goto nextWord;
 				   } while (!isValid);
 
 				   // Kalau udah valid, masukin huruf pertamanya ke puzzle
@@ -149,6 +132,35 @@ namespace tts {
 				   puzzleGrid[x, y]->Visible = true;
 				   Controls->Add(puzzleGrid[x, y]);
 				   puzzleGrid[x, y]->BringToFront();
+
+				   // Place the word in the puzzle
+				   //for (int i = 0; i < wordLength; i++) {
+					  // int newX = x, newY = y;
+
+					  // if (direction == 0) {
+						 //  newX += i;
+					  // }
+					  // else if (direction == 1) {
+						 //  newY += i;
+					  // }
+					  // else if (direction == 2) {
+						 //  newX += i;
+						 //  newY += i;
+					  // }
+
+
+					  // // Kalau udah valid, masukin huruf-hurufnya
+					  // puzzleGrid[newX, newY] = gcnew PuzzleLetter();
+					  // puzzleGrid[newX, newY]->Text = Char::ToString(word[i]);
+					  // puzzleGrid[newX, newY]->Size = System::Drawing::Size(50, 50);
+					  // puzzleGrid[newX, newY]->BackColor = System::Drawing::Color::White;
+					  // puzzleGrid[newX, newY]->Location = Point(50 * newY + 50, 50 * newX + 50);
+					  // puzzleGrid[newX, newY]->Click += gcnew EventHandler(this, &Form1::PuzzleLetter_Click);
+					  // puzzleGrid[newX, newY]->Visible = true;
+					  // Controls->Add(puzzleGrid[x, y]);
+					  // puzzleGrid[newX, newY]->BringToFront();
+				   //}
+
 
 				   // Lanjut masukkin huruf lainnya
 				   for each (char letter in word) {
