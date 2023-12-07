@@ -1,4 +1,5 @@
 #include "Form1.h"
+#include <list>
 #pragma once
 
 namespace tts {
@@ -22,6 +23,8 @@ namespace tts {
 			//
 			//TODO: Add the constructor code here
 			//
+			difficultyButtons = gcnew array<Button^>{ btnEasy, btnMedium, btnHard };
+			categoryButtons = gcnew array<Button^>{ btnAnimals, btnCities, btnColors };
 		}
 
 	protected:
@@ -35,23 +38,25 @@ namespace tts {
 				delete components;
 			}
 		}
-	private: System::Windows::Forms::Button^ button1;
-	protected:
-	private: System::Windows::Forms::Button^ button2;
-	private: System::Windows::Forms::Button^ button3;
+	private: System::Windows::Forms::Button^ btnEasy;
+	private: System::Windows::Forms::Button^ btnHard;
+	private: System::Windows::Forms::Button^ btnMedium;
 	private: System::Windows::Forms::Label^ label1;
 	private: System::Windows::Forms::Label^ label2;
-	private: System::Windows::Forms::Button^ button4;
-	private: System::Windows::Forms::Button^ button5;
-	private: System::Windows::Forms::Button^ button6;
+	private: System::Windows::Forms::Button^ btnAnimals;
+	private: System::Windows::Forms::Button^ btnCities;
+	private: System::Windows::Forms::Button^ btnColors;
 	private: System::Windows::Forms::Button^ btnStart;
-
 
 	private:
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		System::ComponentModel::Container ^components;
+		System::ComponentModel::Container^ components;
+		array<Button^>^ difficultyButtons;
+		array<Button^>^ categoryButtons;
+		String^ difficulty;
+		String^ category;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -60,45 +65,48 @@ namespace tts {
 		/// </summary>
 		void InitializeComponent(void)
 		{
-			this->button1 = (gcnew System::Windows::Forms::Button());
-			this->button2 = (gcnew System::Windows::Forms::Button());
-			this->button3 = (gcnew System::Windows::Forms::Button());
+			this->btnEasy = (gcnew System::Windows::Forms::Button());
+			this->btnHard = (gcnew System::Windows::Forms::Button());
+			this->btnMedium = (gcnew System::Windows::Forms::Button());
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->label2 = (gcnew System::Windows::Forms::Label());
-			this->button4 = (gcnew System::Windows::Forms::Button());
-			this->button5 = (gcnew System::Windows::Forms::Button());
-			this->button6 = (gcnew System::Windows::Forms::Button());
+			this->btnAnimals = (gcnew System::Windows::Forms::Button());
+			this->btnCities = (gcnew System::Windows::Forms::Button());
+			this->btnColors = (gcnew System::Windows::Forms::Button());
 			this->btnStart = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
-			// button1
+			// btnEasy
 			// 
-			this->button1->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(128)), static_cast<System::Int32>(static_cast<System::Byte>(255)),
+			this->btnEasy->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(128)), static_cast<System::Int32>(static_cast<System::Byte>(255)),
 				static_cast<System::Int32>(static_cast<System::Byte>(128)));
-			this->button1->Location = System::Drawing::Point(12, 52);
-			this->button1->Name = L"button1";
-			this->button1->Size = System::Drawing::Size(67, 35);
-			this->button1->TabIndex = 0;
-			this->button1->Text = L"Easy";
-			this->button1->UseVisualStyleBackColor = false;
+			this->btnEasy->Location = System::Drawing::Point(12, 52);
+			this->btnEasy->Name = L"btnEasy";
+			this->btnEasy->Size = System::Drawing::Size(67, 35);
+			this->btnEasy->TabIndex = 0;
+			this->btnEasy->Text = L"Easy";
+			this->btnEasy->UseVisualStyleBackColor = false;
+			this->btnEasy->Click += gcnew System::EventHandler(this, &GameSetup::btnEasy_Click);
 			// 
-			// button2
+			// btnHard
 			// 
-			this->button2->Location = System::Drawing::Point(251, 52);
-			this->button2->Name = L"button2";
-			this->button2->Size = System::Drawing::Size(67, 35);
-			this->button2->TabIndex = 0;
-			this->button2->Text = L"Hard";
-			this->button2->UseVisualStyleBackColor = true;
+			this->btnHard->Location = System::Drawing::Point(251, 52);
+			this->btnHard->Name = L"btnHard";
+			this->btnHard->Size = System::Drawing::Size(67, 35);
+			this->btnHard->TabIndex = 0;
+			this->btnHard->Text = L"Hard";
+			this->btnHard->UseVisualStyleBackColor = true;
+			this->btnHard->Click += gcnew System::EventHandler(this, &GameSetup::btnEasy_Click);
 			// 
-			// button3
+			// btnMedium
 			// 
-			this->button3->Location = System::Drawing::Point(130, 52);
-			this->button3->Name = L"button3";
-			this->button3->Size = System::Drawing::Size(67, 35);
-			this->button3->TabIndex = 0;
-			this->button3->Text = L"Medium";
-			this->button3->UseVisualStyleBackColor = true;
+			this->btnMedium->Location = System::Drawing::Point(130, 52);
+			this->btnMedium->Name = L"btnMedium";
+			this->btnMedium->Size = System::Drawing::Size(67, 35);
+			this->btnMedium->TabIndex = 0;
+			this->btnMedium->Text = L"Medium";
+			this->btnMedium->UseVisualStyleBackColor = true;
+			this->btnMedium->Click += gcnew System::EventHandler(this, &GameSetup::btnEasy_Click);
 			// 
 			// label1
 			// 
@@ -118,34 +126,37 @@ namespace tts {
 			this->label2->TabIndex = 1;
 			this->label2->Text = L"Categories";
 			// 
-			// button4
+			// btnAnimals
 			// 
-			this->button4->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(128)), static_cast<System::Int32>(static_cast<System::Byte>(255)),
+			this->btnAnimals->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(128)), static_cast<System::Int32>(static_cast<System::Byte>(255)),
 				static_cast<System::Int32>(static_cast<System::Byte>(128)));
-			this->button4->Location = System::Drawing::Point(12, 162);
-			this->button4->Name = L"button4";
-			this->button4->Size = System::Drawing::Size(72, 53);
-			this->button4->TabIndex = 2;
-			this->button4->Text = L"Animals";
-			this->button4->UseVisualStyleBackColor = false;
+			this->btnAnimals->Location = System::Drawing::Point(12, 162);
+			this->btnAnimals->Name = L"btnAnimals";
+			this->btnAnimals->Size = System::Drawing::Size(72, 53);
+			this->btnAnimals->TabIndex = 2;
+			this->btnAnimals->Text = L"Animals";
+			this->btnAnimals->UseVisualStyleBackColor = false;
+			this->btnAnimals->Click += gcnew System::EventHandler(this, &GameSetup::btnCat_Click);
 			// 
-			// button5
+			// btnCities
 			// 
-			this->button5->Location = System::Drawing::Point(246, 162);
-			this->button5->Name = L"button5";
-			this->button5->Size = System::Drawing::Size(72, 53);
-			this->button5->TabIndex = 2;
-			this->button5->Text = L"Cities";
-			this->button5->UseVisualStyleBackColor = true;
+			this->btnCities->Location = System::Drawing::Point(246, 162);
+			this->btnCities->Name = L"btnCities";
+			this->btnCities->Size = System::Drawing::Size(72, 53);
+			this->btnCities->TabIndex = 2;
+			this->btnCities->Text = L"Cities";
+			this->btnCities->UseVisualStyleBackColor = true;
+			this->btnCities->Click += gcnew System::EventHandler(this, &GameSetup::btnCat_Click);
 			// 
-			// button6
+			// btnColors
 			// 
-			this->button6->Location = System::Drawing::Point(128, 162);
-			this->button6->Name = L"button6";
-			this->button6->Size = System::Drawing::Size(72, 53);
-			this->button6->TabIndex = 2;
-			this->button6->Text = L"Colors";
-			this->button6->UseVisualStyleBackColor = true;
+			this->btnColors->Location = System::Drawing::Point(128, 162);
+			this->btnColors->Name = L"btnColors";
+			this->btnColors->Size = System::Drawing::Size(72, 53);
+			this->btnColors->TabIndex = 2;
+			this->btnColors->Text = L"Colors";
+			this->btnColors->UseVisualStyleBackColor = true;
+			this->btnColors->Click += gcnew System::EventHandler(this, &GameSetup::btnCat_Click);
 			// 
 			// btnStart
 			// 
@@ -163,14 +174,14 @@ namespace tts {
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(330, 386);
 			this->Controls->Add(this->btnStart);
-			this->Controls->Add(this->button6);
-			this->Controls->Add(this->button5);
-			this->Controls->Add(this->button4);
+			this->Controls->Add(this->btnColors);
+			this->Controls->Add(this->btnCities);
+			this->Controls->Add(this->btnAnimals);
 			this->Controls->Add(this->label2);
 			this->Controls->Add(this->label1);
-			this->Controls->Add(this->button3);
-			this->Controls->Add(this->button2);
-			this->Controls->Add(this->button1);
+			this->Controls->Add(this->btnMedium);
+			this->Controls->Add(this->btnHard);
+			this->Controls->Add(this->btnEasy);
 			this->Name = L"GameSetup";
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
 			this->Text = L"GameSetup";
@@ -179,9 +190,81 @@ namespace tts {
 
 		}
 #pragma endregion
+		/*
+		* Function untuk pindah ke form baru
+		*/
 	private: System::Void btnStart_Click(System::Object^ sender, System::EventArgs^ e) {
-		Form1 baru;
-		baru.ShowDialog();
+		// Form1 adalah nama class form barunya yang kita deklarasi
+		// gcnew digunakan untuk membuat object baru dari class Form1
+		// difficulty dan category adalah parameter yang dipassing ke constructor Form1
+		Form1^ baru = gcnew Form1(difficulty, category);
+		baru->ShowDialog();
 	}
-};
+
+		   /*
+		   * Function untuk mengganti-ganti warna button Difficulty
+		   */
+	private: System::Void btnEasy_Click(System::Object^ sender, System::EventArgs^ e) {
+		// Variable pressed menyimpan button yang diklik
+		// safe_cast digunakan untuk mengubah tipe data dari sender (Object) menjadi Button
+		// karena sender berupa Object, maka tidak bisa langsung diambil nama buttonnya
+		Button^ pressed = safe_cast<Button^>(sender);
+
+		// pressed->Name mengambil nama button yang diklik
+		if (pressed->Name == "btnEasy") {
+			// Jika warna button belum hijau, maka warna button akan diubah menjadi hijau
+			if (pressed->BackColor != System::Drawing::Color::FromArgb(128, 255, 128)) {
+				pressed->BackColor = System::Drawing::Color::FromArgb(128, 255, 128);
+				difficulty = "Easy";
+			}
+		}
+		else if (pressed->Name == "btnMedium") {
+			if (pressed->BackColor != System::Drawing::Color::FromArgb(255, 255, 128)) {
+				pressed->BackColor = System::Drawing::Color::FromArgb(255, 255, 128);
+				difficulty = "Medium";
+			}
+		}
+		else if (pressed->Name == "btnHard") {
+			if (pressed->BackColor != System::Drawing::Color::FromArgb(255, 128, 128)) {
+				pressed->BackColor = System::Drawing::Color::FromArgb(255, 128, 128);
+				difficulty = "Hard";
+			}
+		}
+
+		// Looping untuk mengubah warna button lain yang tidak diklik menjadi abu-abu
+		for each (Button ^ btn in difficultyButtons) {
+			if (btn != pressed) {
+				btn->BackColor = System::Drawing::Color::LightGray;
+			}
+		}
+	}
+
+
+		   /*
+		   * Function untuk mengganti-ganti warna button Category
+		   * kurang lebih sama dengan function di atas
+		   */
+	private: System::Void btnCat_Click(System::Object^ sender, System::EventArgs^ e) {
+		Button^ pressed = safe_cast<Button^>(sender);
+		if (pressed->BackColor != System::Drawing::Color::FromArgb(128, 255, 128)) {
+			pressed->BackColor = System::Drawing::Color::FromArgb(128, 255, 128);
+		}
+
+		if (pressed->Name == "btnAnimals") {
+			category = "Animals";
+		}
+		else if (pressed->Name == "btnCities") {
+			category = "Cities";
+		}
+		else if (pressed->Name == "btnColors") {
+			category = "Colors";
+		}
+
+		for each (Button ^ btn in categoryButtons) {
+			if (btn != pressed) {
+				btn->BackColor = System::Drawing::Color::LightGray;
+			}
+		}
+	}
+	};
 }
