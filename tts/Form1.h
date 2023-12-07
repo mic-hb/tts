@@ -76,40 +76,39 @@ namespace tts {
 			   // Inisialisasi array 2 dimensi untuk puzzle
 			   puzzleGrid = gcnew array<PuzzleLetter^, 2>(puzzle_dimension, puzzle_dimension);
 			   for each (PuzzleLetter ^ letter in puzzleGrid) {
-				   letter = gcnew PuzzleLetter();
-				   letter->Text = "";
-				   letter->Size = System::Drawing::Size(50, 50);
-				   letter->BackColor = System::Drawing::Color::White;
-				   //letter->Location = Point(50 * j + 50, 50 * i + 50);
-				   letter->Click += gcnew EventHandler(this, &Form1::PuzzleLetter_Click);
+				   letter = gcnew PuzzleLetter();	// Inisialisasi setiap kotak puzzle
+				   letter->Text = "";				// Property Text nya dikosongin dulu
 			   }
 
+			   // Random penempatan setiap kata di array hiddenWords
 			   for each (String ^ word in hiddenWords) {
-				   int max_position = puzzle_dimension - word->Length;
+				   int max_position = puzzle_dimension - word->Length;	// Maksimal posisi buat huruf pertama setiap kata
 				   int x = 0;
 				   int y = 0;
-				   int direction = 0;
-				   bool isValid;
-				   int tries = 0;
+				   int direction = 0;	// 0 = kanan, 1 = turun, 2 = diagonal kanan bawah
+				   bool isValid;		// ngecek apakah posisi yang dipilih valid atau tidak
+				   int tries = 0;		// safety measure, kalau ada kata yang ga bisa dimasukin ke puzzle langsung diskip biar ga infinite loop
+
 				   do {
+					   // random x, y dan direction
 					   x = rand() % max_position;
 					   y = rand() % max_position;
 					   direction = rand() % 3;
 
-					   // Check if the position is already occupied
+					   // Pengecekan valid atau tidak
 					   isValid = true;
-					   if (x > max_position || y > max_position) {
+					   if (x > max_position || y > max_position) {		// ini ngecek apakah posisi yang dipilih masih muat buat diagonal atau tdk
 						   if (direction == 2) {
 							   isValid = false;
 						   }
 					   }
-					   if (puzzleGrid[x, y] != nullptr) {
+					   if (puzzleGrid[x, y] != nullptr) {				// kalau posisi yang dipilih udah ada hurufnya, cek apakah hurufnya sama atau tidak
 						   if (puzzleGrid[x, y]->Text != word[0].ToString()) {
 							   isValid = false;
 						   }
 					   }
-					   if (direction == 0) {
-						   for (int i = 0; i < word->Length; i++) {
+					   if (direction == 0) {							// cek masing-masing hurufnya
+						   for (int i = 0; i < word->Length; i++) {		// kalau misal arahnya horizontal, dan ada huruf yang ga sama atau udah ga muat, jadinya invalid
 							   if (puzzleGrid[x + i, y] != nullptr) {
 								   if (puzzleGrid[x + i, y]->Text != word[i].ToString()) {
 									   isValid = false;
@@ -140,6 +139,7 @@ namespace tts {
 					   if (tries == 10) goto nextWord;
 				   } while (!isValid);
 
+				   // Kalau udah valid, masukin huruf pertamanya ke puzzle
 				   puzzleGrid[x, y] = gcnew PuzzleLetter();
 				   puzzleGrid[x, y]->Text = Char::ToString(word[0]);
 				   puzzleGrid[x, y]->Size = System::Drawing::Size(50, 50);
@@ -150,8 +150,7 @@ namespace tts {
 				   Controls->Add(puzzleGrid[x, y]);
 				   puzzleGrid[x, y]->BringToFront();
 
-
-
+				   // Lanjut masukkin huruf lainnya
 				   for each (char letter in word) {
 					   puzzleGrid[x, y] = gcnew PuzzleLetter();
 					   puzzleGrid[x, y]->Text = Char::ToString(letter);
@@ -163,7 +162,7 @@ namespace tts {
 					   Controls->Add(puzzleGrid[x, y]);
 					   puzzleGrid[x, y]->BringToFront();
 
-					   // Increment the letter for the next iteration
+					   // Ubah posisi X dan Y untuk huruf selanjutnya
 					   if (direction == 0) {
 						   x++;
 					   }
@@ -179,109 +178,27 @@ namespace tts {
 			   nextWord:;
 			   }
 
+			   /*
+					Ngisi kotak-kotak yang masih kosong
+			   */
 			   for (int i = 0; i < puzzle_dimension; i++) {
 				   for (int j = 0; j < puzzle_dimension; j++) {
 					   if (puzzleGrid[i, j] == nullptr) {
+						   // ngerandom ascii code dari huruf a sampai z
+						   int letter = rand() % (90 - 65) + 65;
+
 						   puzzleGrid[i, j] = gcnew PuzzleLetter();
+						   puzzleGrid[i, j]->Text = gcnew String(static_cast<char>(letter), 1);
 						   puzzleGrid[i, j]->Size = System::Drawing::Size(50, 50);
+						   puzzleGrid[i, j]->BackColor = System::Drawing::Color::White;
 						   puzzleGrid[i, j]->Location = Point(50 * j + 50, 50 * i + 50);
-						   puzzleGrid[i, j]->Visible = true;  // Ensure visibility
+						   puzzleGrid[i, j]->Visible = true;
+						   puzzleGrid[i, j]->Click += gcnew EventHandler(this, &Form1::PuzzleLetter_Click);
 						   Controls->Add(puzzleGrid[i, j]);
 						   puzzleGrid[i, j]->BringToFront();
 					   }
 				   }
 			   }
-
-			   //int idx = 0;
-			   //for each (String ^ word in hiddenWords)
-			   //{
-				  // for each (char letter in word)
-				  // {
-					 //  puzzleGrid[idx / 3, idx % 3] = gcnew PuzzleLetter();
-					 //  puzzleGrid[idx / 3, idx % 3]->Text = Char::ToString(letter);
-					 //  puzzleGrid[idx / 3, idx % 3]->Size = System::Drawing::Size(50, 50);
-					 //  puzzleGrid[idx / 3, idx % 3]->BackColor = System::Drawing::Color::White;
-					 //  puzzleGrid[idx / 3, idx % 3]->Location = Point(50 * (idx % 3) + 50, 50 * (idx / 3) + 50);
-					 //  puzzleGrid[idx / 3, idx % 3]->Click += gcnew EventHandler(this, &Form1::PuzzleLetter_Click);
-					 //  puzzleGrid[idx / 3, idx % 3]->Visible = true;
-					 //  Controls->Add(puzzleGrid[idx / 3, idx % 3]);
-					 //  puzzleGrid[idx / 3, idx % 3]->BringToFront();
-
-					 //  // Increment the letter for the next iteration
-					 //  idx++;
-				  // }
-			   //}
-			   //array<char, 1>^ letters = gcnew array<char, 1>{'D', 'O', 'G', 'C', 'A', 'T', 'R', 'A', 'T'};
-			   //char letter = 'A';
-
-			   //for (int i = 0; i < 3; i++) {
-				  // for (int j = 0; j < 3; j++) {
-					 //  puzzleGrid[i, j] = gcnew PuzzleLetter();
-					 //  puzzleGrid[i, j]->Text = Char::ToString(letters[idx]);
-					 //  puzzleGrid[i, j]->Size = System::Drawing::Size(50, 50);
-					 //  puzzleGrid[i, j]->BackColor = System::Drawing::Color::White;
-					 //  puzzleGrid[i, j]->Location = Point(50 * j + 50, 50 * i + 50);
-					 //  puzzleGrid[i, j]->Click += gcnew EventHandler(this, &Form1::PuzzleLetter_Click);
-					 //  puzzleGrid[i, j]->Visible = true;  // Ensure visibility
-					 //  Controls->Add(puzzleGrid[i, j]);
-					 //  PerformLayout();
-					 //  Invalidate();
-					 //  Update();
-					 //  puzzleGrid[i, j]->BringToFront();
-
-					 //  // Increment the letter for the next iteration
-					 //  letter++;
-					 //  idx++;
-				  // }
-			   //}
-
-			   //puzzleGrid = gcnew array<Label^, 2>(3, 3);
-
-			   //char letter = 'A';
-
-			   //for (int i = 0; i < 3; i++) {
-			   //    for (int j = 0; j < 3; j++) {
-			   //        puzzleGrid[i, j] = gcnew Label();
-			   //        puzzleGrid[i, j]->Text = Char::ToString(letter);
-			   //        puzzleGrid[i, j]->Location = Point(50 * j, 50 * i);
-			   //        //puzzleGrid[i, j]->Click += gcnew EventHandler(this, &Form1::PuzzleLetter_Click);
-			   //        puzzleGrid[i, j]->Visible = true;  // Ensure visibility
-			   //        Controls->Add(puzzleGrid[i, j]);
-			   //        PerformLayout();
-			   //        Invalidate();
-			   //        Update();
-			   //        puzzleGrid[i, j]->BringToFront();
-
-			   //        // Increment the letter for the next iteration
-			   //        letter++;
-			   //    }
-			   //}
-
-
-			   /*Label^ tmp;
-			   tmp = gcnew Label();
-			   tmp->Text = Char::ToString('A');
-			   tmp->Location = Point(0, 0);
-			   tmp->Visible = true;
-			   Controls->Add(tmp);
-
-			   Label^ tmp1;
-			   tmp1 = gcnew Label();
-			   tmp1->Text = Char::ToString('B');
-			   tmp1->Location = Point(50, 0);
-			   tmp1->Visible = true;
-			   Controls->Add(tmp1);
-
-			   Label^ tmp2;
-			   tmp2 = gcnew Label();
-			   tmp2->Text = Char::ToString('C');
-			   tmp2->Location = Point(100, 0);
-			   tmp2->Visible = true;
-			   Controls->Add(tmp2);
-
-			   tmp->BringToFront();
-			   tmp1->BringToFront();
-			   tmp2->BringToFront();*/
 		   }
 
 		   void PuzzleLetter_Click(Object^ sender, EventArgs^ e) {
