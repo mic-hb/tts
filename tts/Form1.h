@@ -33,6 +33,7 @@ namespace tts {
 		ref class BST {
 		private:
 			Node^ root;
+			List<String^>^ hiddenWords;
 
 			Node^ insertRecursive(Node^ root, String^ key) {
 				if (root == nullptr) {
@@ -73,14 +74,17 @@ namespace tts {
 			Node^ inOrderTrav(Node^ root) {
 				if (root != nullptr) {
 					inOrderTrav(root->left);
-					return root;
+					//return root;
+					this->hiddenWords->Add(root->key);
 					inOrderTrav(root->right);
 				}
+
 			}
 
 		public:
 			BST() {
 				root = nullptr;
+				hiddenWords = gcnew List<String^>();
 			}
 
 			void insert(String^ key) {
@@ -95,6 +99,11 @@ namespace tts {
 
 			void checkWordInOrder() {
 
+			}
+
+			List<String^>^ getHiddenWords() {
+				inOrderTrav(root);
+				return hiddenWords;
 			}
 
 			String^ find(String^ key) {
@@ -130,7 +139,7 @@ namespace tts {
 	private:
 		System::ComponentModel::Container^ components;
 		array<PuzzleLetter^, 2>^ puzzleGrid;
-		array<String^>^ hiddenWords;
+		List<String^>^ hiddenWords;
 		BST^ hiddens;
 		String^ difficulty;
 		String^ category;
@@ -141,15 +150,6 @@ namespace tts {
 
 
 		void InitializeHiddenWords() {
-			hiddenWords = gcnew array<String^>{
-				"CAT",
-					"DOG",
-					"RAT",
-					"DEER",
-					"MOUSE",
-					"SNAKE"
-			};
-
 			hiddens = gcnew BST();
 			hiddens->insert("CAT");
 			hiddens->insert("DOG");
@@ -157,6 +157,8 @@ namespace tts {
 			hiddens->insert("DEER");
 			hiddens->insert("MOUSE");
 			hiddens->insert("SNAKE");
+
+			hiddenWords = hiddens->getHiddenWords();
 
 			foundWords = gcnew List<String^>();
 		}
@@ -234,30 +236,30 @@ namespace tts {
 
 				// Place the word in the puzzle
 				//for (int i = 0; i < wordLength; i++) {
-				   // int newX = x, newY = y;
+					// int newX = x, newY = y;
 
-				   // if (direction == 0) {
-					  //  newX += i;
-				   // }
-				   // else if (direction == 1) {
-					  //  newY += i;
-				   // }
-				   // else if (direction == 2) {
-					  //  newX += i;
-					  //  newY += i;
-				   // }
+					// if (direction == 0) {
+						//  newX += i;
+					// }
+					// else if (direction == 1) {
+						//  newY += i;
+					// }
+					// else if (direction == 2) {
+						//  newX += i;
+						//  newY += i;
+					// }
 
 
-				   // // Kalau udah valid, masukin huruf-hurufnya
-				   // puzzleGrid[newX, newY] = gcnew PuzzleLetter();
-				   // puzzleGrid[newX, newY]->Text = Char::ToString(word[i]);
-				   // puzzleGrid[newX, newY]->Size = System::Drawing::Size(50, 50);
-				   // puzzleGrid[newX, newY]->BackColor = System::Drawing::Color::White;
-				   // puzzleGrid[newX, newY]->Location = Point(50 * newY + 50, 50 * newX + 50);
-				   // puzzleGrid[newX, newY]->Click += gcnew EventHandler(this, &Form1::PuzzleLetter_Click);
-				   // puzzleGrid[newX, newY]->Visible = true;
-				   // Controls->Add(puzzleGrid[x, y]);
-				   // puzzleGrid[newX, newY]->BringToFront();
+					// // Kalau udah valid, masukin huruf-hurufnya
+					// puzzleGrid[newX, newY] = gcnew PuzzleLetter();
+					// puzzleGrid[newX, newY]->Text = Char::ToString(word[i]);
+					// puzzleGrid[newX, newY]->Size = System::Drawing::Size(50, 50);
+					// puzzleGrid[newX, newY]->BackColor = System::Drawing::Color::White;
+					// puzzleGrid[newX, newY]->Location = Point(50 * newY + 50, 50 * newX + 50);
+					// puzzleGrid[newX, newY]->Click += gcnew EventHandler(this, &Form1::PuzzleLetter_Click);
+					// puzzleGrid[newX, newY]->Visible = true;
+					// Controls->Add(puzzleGrid[x, y]);
+					// puzzleGrid[newX, newY]->BringToFront();
 				//}
 
 
@@ -341,7 +343,6 @@ namespace tts {
 
 			if (wordToCheck != nullptr) {
 				wordFound(wordToCheck);
-
 				MessageBox::Show("Found: " + highlightedLetters);
 			}
 		}
