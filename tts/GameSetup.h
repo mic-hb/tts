@@ -17,6 +17,9 @@ namespace tts {
 	public ref class GameSetup : public System::Windows::Forms::Form
 	{
 	public:
+		int^ score;
+		String^ player_name;
+
 		GameSetup(void)
 		{
 			InitializeComponent();
@@ -199,6 +202,10 @@ namespace tts {
 		// difficulty dan category adalah parameter yang dipassing ke constructor Form1
 		Form1^ baru = gcnew Form1(difficulty, category);
 		baru->ShowDialog();
+		this->score = baru->score;
+		this->player_name = baru->player_name;
+
+		// TODO: simpan score ke HashMap
 	}
 
 		   /*

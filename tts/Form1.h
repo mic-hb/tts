@@ -4,6 +4,7 @@
 #include <vector>
 #include <Windows.h>
 #include "PuzzleLetter.h"
+#include <iostream>
 
 namespace tts {
 
@@ -18,6 +19,9 @@ namespace tts {
 	public ref class Form1 : public System::Windows::Forms::Form
 	{
 	public:
+		int^ score;
+		String^ player_name;
+
 		ref class Node {
 		public:
 			String^ key;
@@ -71,7 +75,7 @@ namespace tts {
 				}
 			}
 
-			Node^ inOrderTrav(Node^ root) {
+			void inOrderTrav(Node^ root) {
 				if (root != nullptr) {
 					inOrderTrav(root->left);
 					//return root;
@@ -123,8 +127,9 @@ namespace tts {
 			Text = "Word Puzzle Game";
 			InitializeHiddenWords();
 			InitializePuzzleGrid();
+			InitializeLB();
 
-			Size = System::Drawing::Size(50 * puzzleGrid->GetLength(0) + 100, 50 * puzzleGrid->GetLength(1) + 100);
+			Size = System::Drawing::Size(50 * puzzleGrid->GetLength(0) + 125 + 125, 50 * puzzleGrid->GetLength(1) + 125);
 		}
 
 	protected:
@@ -143,6 +148,7 @@ namespace tts {
 		BST^ hiddens;
 		String^ difficulty;
 		String^ category;
+		ListBox^ lbFoundWords;
 
 	private:
 		System::Windows::Forms::FontDialog^ fontDialog1;
@@ -314,6 +320,24 @@ namespace tts {
 			}
 		}
 
+		void InitializeLB() {
+			int starting_x = 50 * puzzleGrid->GetLength(0) + 75;
+			int starting_y = 50;
+
+			lbFoundWords = gcnew ListBox();
+			lbFoundWords->Location = Point(starting_x, starting_y);
+			lbFoundWords->Size = System::Drawing::Size(100, 12 * hiddenWords->Count);
+			lbFoundWords->Visible = true;
+			lbFoundWords->Enabled = false;
+			lbFoundWords->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
+			Controls->Add(lbFoundWords);
+			lbFoundWords->BringToFront();
+
+			for each (String ^ word in hiddenWords) {
+				/*lbFoundWords->Items->Add(word);*/
+			}
+		}
+
 		void PuzzleLetter_Click(Object^ sender, EventArgs^ e) {
 			PuzzleLetter^ clickedLetter = dynamic_cast<PuzzleLetter^>(sender);
 
@@ -349,6 +373,7 @@ namespace tts {
 
 		void wordFound(String^ word) {
 			foundWords->Add(word);
+			lbFoundWords->Items->Add(word);
 
 			for (int i = 0; i < puzzleGrid->GetLength(0); i++) {
 				for (int j = 0; j < puzzleGrid->GetLength(1); j++) {
@@ -357,6 +382,25 @@ namespace tts {
 						puzzleGrid[i, j]->BackColor = System::Drawing::Color::LightSalmon;
 					}
 				}
+			}
+
+			if (foundWords->Count == hiddenWords->Count) {
+				player_name = "Player 1";
+				score = 10;
+
+				// Show a message box and capture the user's response
+				System::Windows::Forms::DialogResult result = MessageBox::Show("Do you want to continue?", "Confirmation", MessageBoxButtons::YesNo, MessageBoxIcon::Question);
+
+				// Process the user's response
+				if (result == System::Windows::Forms::DialogResult::Yes) {
+					// User clicked Yes
+					Close();
+				}
+				else {
+					// User clicked No or closed the dialog
+					Close();
+				}
+				this->Close();
 			}
 		}
 
@@ -378,18 +422,18 @@ namespace tts {
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
 			this->Text = L"Form1";
 			this->ResumeLayout(false);
-			BST^ tree = gcnew BST();
+			//BST^ tree = gcnew BST();
 
 
 			//cara insert
-			tree->insert("apple");
-			tree->insert("banana");
-			tree->insert("orange");
-			tree->insert("grape");
-			tree->insert("kiwi");
+			//tree->insert("apple");
+			//tree->insert("banana");
+			//tree->insert("orange");
+			//tree->insert("grape");
+			//tree->insert("kiwi");
 
 			//display semua dengan urutan inorderTraversal
-			tree->displayInOrder();
+			//tree->displayInOrder();
 
 			//find di dalam tree
 			/*String^ x = "oranges";

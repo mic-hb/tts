@@ -1,4 +1,6 @@
 #include "GameSetup.h"
+#include <vector>
+#include <string>
 #pragma once
 
 namespace tts {
@@ -111,8 +113,14 @@ namespace tts {
 		}
 #pragma endregion
 	private: System::Void btnPlay_Click(System::Object^ sender, System::EventArgs^ e) {
-		GameSetup baru;
-		baru.ShowDialog();
+		GameSetup^ baru = gcnew GameSetup();
+		baru->ShowDialog();
+		int^ current_score = baru->score;
+		String^ current_name = baru->player_name;
+
+		MessageBox::Show("Name: " + current_name + "\nScore: " + current_score);
+
+
 	}
 	};
 }
