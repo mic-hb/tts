@@ -126,12 +126,14 @@
     <ClCompile Include="StartMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Entry.h" />
     <ClInclude Include="Form1.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="GameSetup.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="HashMap.h" />
     <ClInclude Include="PuzzleLetter.h" />
     <ClInclude Include="StartMenu.h">
       <FileType>CppForm</FileType>

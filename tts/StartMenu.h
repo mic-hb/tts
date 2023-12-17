@@ -1,6 +1,8 @@
 #include "GameSetup.h"
+#include "HashMap.h"
 #include <vector>
 #include <string>
+#include <msclr/marshal_cppstd.h>
 #pragma once
 
 namespace tts {
@@ -11,6 +13,7 @@ namespace tts {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+	using namespace msclr::interop;
 
 	/// <summary>
 	/// Summary for StartMenu
@@ -18,6 +21,7 @@ namespace tts {
 	public ref class StartMenu : public System::Windows::Forms::Form
 	{
 	public:
+		HashMap* scores = new HashMap(20);
 		StartMenu(void)
 		{
 			InitializeComponent();
@@ -48,7 +52,7 @@ namespace tts {
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		System::ComponentModel::Container ^components;
+		System::ComponentModel::Container^ components;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -115,12 +119,28 @@ namespace tts {
 	private: System::Void btnPlay_Click(System::Object^ sender, System::EventArgs^ e) {
 		GameSetup^ baru = gcnew GameSetup();
 		baru->ShowDialog();
+
+		// Ambil name dan score player
+		// Variabel di passing dari Form1 ke GameSetup ke StartMenu
 		int^ current_score = baru->score;
 		String^ current_name = baru->player_name;
 
-		MessageBox::Show("Name: " + current_name + "\nScore: " + current_score);
+		// Convert String^ ke std::string
+		std::string name = marshal_as<std::string>(current_name);
+		int score = (int)current_score;
 
+		//MessageBox::Show("Name: " + current_name + "\nScore: " + current_score);
 
+		//HashMap scores(20);
+		scores->put("Bob", 100);
+		scores->put(name, score);
+
+		// Displaying scores
+		std::vector<Entry> entries = scores->get_all();
+		for (const Entry& entry : entries) {
+			String^ message = gcnew String(("Key: " + entry.key + ", Value: " + std::to_string(entry.value)).c_str());
+			MessageBox::Show(message);
+		}
 	}
 	};
 }
