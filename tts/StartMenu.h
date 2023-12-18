@@ -1,5 +1,6 @@
 #include "GameSetup.h"
 #include "HashMap.h"
+#include "FormHighscore.h"
 #include <vector>
 #include <string>
 #include <msclr/marshal_cppstd.h>
@@ -99,6 +100,7 @@ namespace tts {
 			this->btnHighscore->TabIndex = 2;
 			this->btnHighscore->Text = L"Highscore";
 			this->btnHighscore->UseVisualStyleBackColor = true;
+			this->btnHighscore->Click += gcnew System::EventHandler(this, &StartMenu::btnHighscore_Click);
 			// 
 			// StartMenu
 			// 
@@ -142,5 +144,9 @@ namespace tts {
 			MessageBox::Show(message);
 		}
 	}
-	};
+	private: System::Void btnHighscore_Click(System::Object^ sender, System::EventArgs^ e) {
+		FormHighscore^ baru = gcnew FormHighscore(scores);
+		baru->ShowDialog();
+	}
+};
 }
