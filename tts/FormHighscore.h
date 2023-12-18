@@ -15,10 +15,11 @@ namespace tts {
 	public ref class FormHighscore : public System::Windows::Forms::Form
 	{
 	public:
-		HashMap* scores;
-		FormHighscore(HashMap* scores)
+		//HashMap* scores;
+		//FormHighscore(HashMap* scores)
+		FormHighscore(void)
 		{
-			this->scores = scores;
+			//this->scores = scores;
 			InitializeComponent();
 			//
 			//TODO: Add the constructor code here
@@ -38,6 +39,8 @@ namespace tts {
 		}
 	private: System::Windows::Forms::Label^ label1;
 	private: System::Windows::Forms::DataGridView^ dgvHighscore;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ Name;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ Score;
 	protected:
 
 
@@ -56,6 +59,8 @@ namespace tts {
 		{
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->dgvHighscore = (gcnew System::Windows::Forms::DataGridView());
+			this->Name = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Score = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dgvHighscore))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -74,12 +79,27 @@ namespace tts {
 			// 
 			this->dgvHighscore->AllowUserToAddRows = false;
 			this->dgvHighscore->AllowUserToDeleteRows = false;
+			this->dgvHighscore->AutoSizeColumnsMode = System::Windows::Forms::DataGridViewAutoSizeColumnsMode::Fill;
 			this->dgvHighscore->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
+			this->dgvHighscore->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(2) { this->Name, this->Score });
 			this->dgvHighscore->Location = System::Drawing::Point(138, 67);
 			this->dgvHighscore->Name = L"dgvHighscore";
 			this->dgvHighscore->ReadOnly = true;
+			this->dgvHighscore->RowHeadersVisible = false;
 			this->dgvHighscore->Size = System::Drawing::Size(339, 301);
 			this->dgvHighscore->TabIndex = 1;
+			// 
+			// Name
+			// 
+			this->Name->HeaderText = L"Name";
+			this->Name->Name = L"Name";
+			this->Name->ReadOnly = true;
+			// 
+			// Score
+			// 
+			this->Score->HeaderText = L"Score";
+			this->Score->Name = L"Score";
+			this->Score->ReadOnly = true;
 			// 
 			// FormHighscore
 			// 
@@ -88,7 +108,7 @@ namespace tts {
 			this->ClientSize = System::Drawing::Size(626, 413);
 			this->Controls->Add(this->dgvHighscore);
 			this->Controls->Add(this->label1);
-			this->Name = L"FormHighscore";
+			//this->Name = L"FormHighscore";
 			this->Text = L"FormHighscore";
 			this->Load += gcnew System::EventHandler(this, &FormHighscore::FormHighscore_Load);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dgvHighscore))->EndInit();
@@ -98,7 +118,7 @@ namespace tts {
 		}
 #pragma endregion
 	private: System::Void FormHighscore_Load(System::Object^ sender, System::EventArgs^ e) {
-		dgvHighscore->Rows->Clear();
+		/*dgvHighscore->Rows->Clear();
 		dgvHighscore->Columns->Clear();
 		dgvHighscore->Columns->Add("Name", "Name");
 		dgvHighscore->Columns->Add("Score", "Score");
@@ -106,7 +126,7 @@ namespace tts {
 			dgvHighscore->Rows->Add();
 			dgvHighscore->Rows[i]->Cells[0]->Value = gcnew String(scores->get(i)->getName().c_str());
 			dgvHighscore->Rows[i]->Cells[1]->Value = gcnew String(scores->get(i)->getScore().c_str());
-		}
+		}*/
 	}
 	};
 }

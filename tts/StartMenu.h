@@ -145,7 +145,7 @@ namespace tts {
 		}
 	}
 	private: System::Void btnHighscore_Click(System::Object^ sender, System::EventArgs^ e) {
-		FormHighscore^ baru = gcnew FormHighscore(scores);
+		FormHighscore^ baru = gcnew FormHighscore();
 		baru->ShowDialog();
 	}
 };
