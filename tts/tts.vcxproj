@@ -121,6 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Form1.cpp" />
+    <ClCompile Include="FormInputName.cpp" />
     <ClCompile Include="GameSetup.cpp" />
     <ClCompile Include="PuzzleLetter.cpp" />
     <ClCompile Include="StartMenu.cpp" />
@@ -128,6 +129,9 @@
   <ItemGroup>
     <ClInclude Include="Entry.h" />
     <ClInclude Include="Form1.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="FormInputName.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="GameSetup.h">
@@ -142,6 +146,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormInputName.resx">
+      <DependentUpon>FormInputName.h</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GameSetup.resx">
       <DependentUpon>GameSetup.h</DependentUpon>

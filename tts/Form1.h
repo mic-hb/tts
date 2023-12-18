@@ -4,6 +4,7 @@
 #include <vector>
 #include <Windows.h>
 #include "PuzzleLetter.h"
+#include "FormInputName.h"
 #include <iostream>
 
 namespace tts {
@@ -385,6 +386,7 @@ namespace tts {
 			}
 
 			if (foundWords->Count == hiddenWords->Count) {
+
 				player_name = "Player 1";
 				score = 10;
 
@@ -397,8 +399,11 @@ namespace tts {
 					Close();
 				}
 				else {
+					FormInputName^ baru = gcnew FormInputName();
+					baru->ShowDialog();
 					// User clicked No or closed the dialog
 					Close();
+					this->Name = baru->name;
 				}
 				this->Close();
 			}
