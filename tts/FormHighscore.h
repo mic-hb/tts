@@ -1,3 +1,6 @@
+#include <string>
+#include "HashMap.h"
+#include <msclr/marshal_cppstd.h>
 #pragma once
 
 namespace tts {
@@ -8,6 +11,7 @@ namespace tts {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+	using namespace msclr::interop;
 
 	/// <summary>
 	/// Summary for FormHighscore
@@ -15,11 +19,11 @@ namespace tts {
 	public ref class FormHighscore : public System::Windows::Forms::Form
 	{
 	public:
-		//HashMap* scores;
-		//FormHighscore(HashMap* scores)
-		FormHighscore(void)
+		HashMap* scores;
+		FormHighscore(HashMap* scores)
+			//FormHighscore(void)
 		{
-			//this->scores = scores;
+			this->scores = scores;
 			InitializeComponent();
 			//
 			//TODO: Add the constructor code here
@@ -127,6 +131,14 @@ namespace tts {
 			dgvHighscore->Rows[i]->Cells[0]->Value = gcnew String(scores->get(i)->getName().c_str());
 			dgvHighscore->Rows[i]->Cells[1]->Value = gcnew String(scores->get(i)->getScore().c_str());
 		}*/
+		std::vector<Entry> entries = scores->get_all();
+		for (const Entry& entry : entries) {
+			//String^ message = gcnew String(("Key: " + entry.key + ", Value: " + std::to_string(entry.value)).c_str());
+
+			//gcnew String(((std::to_string(entry.value)).c_str())
+			array<String^>^ row = { marshal_as<String^>(entry.key) , gcnew String(((std::to_string(entry.value)).c_str()))};
+			dgvHighscore->Rows->Add(row);
+		}
 	}
 	};
 }

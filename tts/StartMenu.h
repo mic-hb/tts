@@ -138,20 +138,20 @@ namespace tts {
 			//MessageBox::Show("Name: " + current_name + "\nScore: " + current_score);
 
 			//HashMap scores(20);
-			scores->put("Bob", 100);
+			//scores->put("Bob", 100);
 			scores->put(name, score);
 
 			// Displaying scores
-			std::vector<Entry> entries = scores->get_all();
-			for (const Entry& entry : entries) {
-				String^ message = gcnew String(("Key: " + entry.key + ", Value: " + std::to_string(entry.value)).c_str());
-				MessageBox::Show(message);
-			}
+			//std::vector<Entry> entries = scores->get_all();
+			//for (const Entry& entry : entries) {
+			//	String^ message = gcnew String(("Key: " + entry.key + ", Value: " + std::to_string(entry.value)).c_str());
+			//	MessageBox::Show(message);
+			//}
 		}
 
 	}
 	private: System::Void btnHighscore_Click(System::Object^ sender, System::EventArgs^ e) {
-		FormHighscore^ baru = gcnew FormHighscore();
+		FormHighscore^ baru = gcnew FormHighscore(scores);
 		baru->ShowDialog();
 	}
 	};

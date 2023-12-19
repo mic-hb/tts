@@ -450,10 +450,13 @@ namespace tts {
 
 			if (foundWords->Count == hiddenWords->Count) {
 				timer1->Stop();
-				score = seconds;
+				if (seconds < 40)
+					score = 100 - seconds * seconds / (60 - seconds);
+				else
+					score = 10;
 
 				// 
-				FormInputName^ baru = gcnew FormInputName();
+				FormInputName^ baru = gcnew FormInputName(score);
 				baru->ShowDialog();
 				this->player_name = baru->name;
 
@@ -503,6 +506,10 @@ namespace tts {
 #pragma endregion
 	private: System::Void timer1_Tick(System::Object^ sender, System::EventArgs^ e) {
 		seconds++;
+		if (seconds < 40)
+			this->Text = (100 - seconds * seconds / (60 - seconds)).ToString();
+		else
+			this->Text = (10).ToString();
 		//TimeSpan elapsed = timer1.`
 	}
 	};
