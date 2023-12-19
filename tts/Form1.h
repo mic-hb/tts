@@ -20,13 +20,12 @@ namespace tts {
 	public ref class Form1 : public System::Windows::Forms::Form
 	{
 	public:
-		int^ score;
-		int seconds;
-		bool playAgain;
-	private: System::Windows::Forms::Timer^ timer1;
-	public:
-		String^ player_name;
+		String^ player_name; // nama player
+		int^ score; // score si player
+		int seconds; // timer
+		bool playAgain; // buat ngecek playernya mau main lagi atau engga
 
+		// deklrasi class BST
 		ref class Node {
 		public:
 			String^ key;
@@ -122,25 +121,53 @@ namespace tts {
 			}
 
 		};
+	private:
+		String^ difficulty;
+		String^ category;
+
+		array<PuzzleLetter^, 2>^ puzzleGrid; // array 2 dimensi buat nyimpen puzzle
+		String^ highlightedLetters = ""; // string buat nyimpen huruf-huruf yang udah di-highlight
+
+		ListBox^ lbHiddenWords; // listbox buat nampilin kata-kata yang belum ketemu
+		ListBox^ lbFoundWords; // listbox buat nampilin kata-kata yang udah ketemu
+
+		BST^ hiddens; // deklarasi BST buat nyimpen kata-kata yang mau dicari
+		List<String^>^ hiddenWords; // list buat nyimpen kata-kata yang mau dicari
+		List<String^>^ foundWords; // list buat nyimpen kata-kata yang udah ketemu
+
+		// Jadi kita make BST & list biasa soalnya kegunaannya beda
+		// Kalau BST buat nge-compare yg udah di highlight, soalnya dia ada fungsi find nya
+		// Kalau List buat sekedar nampilin aja
+
+		System::Windows::Forms::FontDialog^ fontDialog1;
+
+	private: System::Windows::Forms::Timer^ timer1;
+	public:
+
 		Form1(String^ difficulty, String^ category)
 		{
-			// Mengambil string yang dipassing dari form sebelumnya
+			InitializeComponent();
+			Text = "Word Puzzle Game";
+
+			// Ngambil variabel yang dipassing dari form sebelumnya
 			this->difficulty = difficulty;
 			this->category = category;
 
+			// variabelnya diinialisasi dulu
 			this->score = 0;
 			this->player_name = "";
 			this->seconds = 0;
 			this->playAgain = false;
 
-			InitializeComponent();
-			Text = "Word Puzzle Game";
+			// ini urutan jalanin void nya
 			InitializeHiddenWords();
 			InitializePuzzleGrid();
 			InitializeLB();
 
+			// buat ngatur ukuran formnya
 			Size = System::Drawing::Size(50 * puzzleGrid->GetLength(0) + 125 + 125, 50 * puzzleGrid->GetLength(1) + 125);
 
+			// buat jalanin timer
 			timer1->Start();
 		}
 
@@ -153,38 +180,24 @@ namespace tts {
 			}
 		}
 	private: System::ComponentModel::IContainer^ components;
-	protected:
-
 	private:
 
-		array<PuzzleLetter^, 2>^ puzzleGrid;
-		List<String^>^ hiddenWords;
-		BST^ hiddens;
-		String^ difficulty;
-		String^ category;
-		ListBox^ lbFoundWords;
-		ListBox^ lbHiddenWords;
-		String^ highlightedLetters = "";
-
-	private:
-		System::Windows::Forms::FontDialog^ fontDialog1;
-		List<String^>^ foundWords;
-
-
+		// Void buat ngisi kata-kata buat puzzle
 		void InitializeHiddenWords() {
 			hiddens = gcnew BST();
-			hiddens->insert("CAT");
+			hiddens->insert("CAT"); // kalau ini masukin kata2 nya ke BST
 			hiddens->insert("DOG");
 			hiddens->insert("RAT");
 			hiddens->insert("DEER");
 			hiddens->insert("MOUSE");
 			hiddens->insert("SNAKE");
 
-			hiddenWords = hiddens->getHiddenWords();
+			hiddenWords = hiddens->getHiddenWords(); // kalau ini nge-copas dari BST ke list biasa
 
-			foundWords = gcnew List<String^>();
+			foundWords = gcnew List<String^>(); // inisialisasi list kosongan
 		}
 
+		// Void buat setup puzzlenya
 		void InitializePuzzleGrid() {
 			// Deklarasi ukuran puzzle sesuai dengan tingkat difficulty
 			int puzzle_dimension = 6;
@@ -206,8 +219,8 @@ namespace tts {
 			}
 
 			// Random penempatan setiap kata di array hiddenWords
+			// List hiddenWords di loop satu satu
 			for (int i = hiddenWords->Count - 1; i >= 0; i--) {
-				//for each (String ^ word in hiddenWords) {
 				String^ word = hiddenWords[i];
 				int wordLength = word->Length;
 
@@ -216,12 +229,12 @@ namespace tts {
 				int tries = 0;
 
 				do {
-					// Random starting position and direction
+					// Nge-Random posisi & direction nya dulu
 					x = rand() % puzzle_dimension;
 					y = rand() % puzzle_dimension;
 					direction = rand() % 3;
 
-					// Check if the word fits in the chosen direction
+					// For ini buat ngecek masih muat apa engga buat masukin ke puzzle
 					isValid = true;
 					for (int i = 0; i < wordLength; i++) {
 						int newX = x, newY = y;
@@ -244,6 +257,8 @@ namespace tts {
 					}
 
 					tries++;
+
+					// Kalau udah 100x ngeloop tapi ga muat, lgsg diskip kata ini, jadi ga masuk ke puzzle
 					if (tries == 100)
 					{
 						MessageBox::Show(word);
@@ -252,47 +267,8 @@ namespace tts {
 					}
 				} while (!isValid);
 
-				// Kalau udah valid, masukin huruf pertamanya ke puzzle
-				puzzleGrid[x, y] = gcnew PuzzleLetter();
-				puzzleGrid[x, y]->Text = Char::ToString(word[0]);
-				puzzleGrid[x, y]->Size = System::Drawing::Size(50, 50);
-				puzzleGrid[x, y]->BackColor = System::Drawing::Color::White;
-				puzzleGrid[x, y]->Location = Point(50 * y + 50, 50 * x + 50);
-				puzzleGrid[x, y]->Click += gcnew EventHandler(this, &Form1::PuzzleLetter_Click);
-				puzzleGrid[x, y]->Visible = true;
-				Controls->Add(puzzleGrid[x, y]);
-				puzzleGrid[x, y]->BringToFront();
 
-				// Place the word in the puzzle
-				//for (int i = 0; i < wordLength; i++) {
-					// int newX = x, newY = y;
-
-					// if (direction == 0) {
-						//  newX += i;
-					// }
-					// else if (direction == 1) {
-						//  newY += i;
-					// }
-					// else if (direction == 2) {
-						//  newX += i;
-						//  newY += i;
-					// }
-
-
-					// // Kalau udah valid, masukin huruf-hurufnya
-					// puzzleGrid[newX, newY] = gcnew PuzzleLetter();
-					// puzzleGrid[newX, newY]->Text = Char::ToString(word[i]);
-					// puzzleGrid[newX, newY]->Size = System::Drawing::Size(50, 50);
-					// puzzleGrid[newX, newY]->BackColor = System::Drawing::Color::White;
-					// puzzleGrid[newX, newY]->Location = Point(50 * newY + 50, 50 * newX + 50);
-					// puzzleGrid[newX, newY]->Click += gcnew EventHandler(this, &Form1::PuzzleLetter_Click);
-					// puzzleGrid[newX, newY]->Visible = true;
-					// Controls->Add(puzzleGrid[x, y]);
-					// puzzleGrid[newX, newY]->BringToFront();
-				//}
-
-
-				// Lanjut masukkin huruf lainnya
+				// Kalau udah nemu posisi nya baru dimasukin ke puzzle
 				for each (char letter in word) {
 					puzzleGrid[x, y] = gcnew PuzzleLetter();
 					puzzleGrid[x, y]->Text = Char::ToString(letter);
@@ -321,7 +297,8 @@ namespace tts {
 			}
 
 			/*
-				 Ngisi kotak-kotak yang masih kosong
+			*	Sebelumnya kan puzzle nya kosong, trus kita baru ngisi yang ada di hiddenWords
+				Nah, sekarang ngisi kotak-kotak yang masih kosong
 			*/
 			for (int i = 0; i < puzzle_dimension; i++) {
 				for (int j = 0; j < puzzle_dimension; j++) {
@@ -343,6 +320,7 @@ namespace tts {
 			}
 		}
 
+		// Void buat setup listbox yg nampilih kata-kata yang mau dicari
 		void InitializeLB() {
 			int starting_x = 50 * puzzleGrid->GetLength(0) + 75;
 			int starting_y = 50;
@@ -372,19 +350,24 @@ namespace tts {
 			}
 		}
 
+		// Ini namanya event click
+		// Jadi kalau ada button yg di klik, dia bakal jalanin ini
 		void PuzzleLetter_Click(Object^ sender, EventArgs^ e) {
-			PuzzleLetter^ clickedLetter = dynamic_cast<PuzzleLetter^>(sender);
-
+			PuzzleLetter^ clickedLetter = dynamic_cast<PuzzleLetter^>(sender); // ini ky ngambil button mana yg diklik
+			
 			if (!clickedLetter->IsHighlighted) {
-				if (clickedLetter->BackColor == System::Drawing::Color::White)
+				if (clickedLetter->BackColor == System::Drawing::Color::White)			// buat ganti-ganti warna kalau diklik
 					clickedLetter->BackColor = System::Drawing::Color::LightSalmon;
 				else
 					clickedLetter->BackColor = System::Drawing::Color::Salmon;
 
+				// kalau buttonnya diklik, boolean nya jadi true
 				clickedLetter->IsHighlighted = true;
 
+				// trus hurufnya ditambahin ke string highlightedLetters
 				highlightedLetters += clickedLetter->Text;
 
+				// void buat ngecompare
 				CheckForWords();
 			}
 			else {
@@ -394,29 +377,38 @@ namespace tts {
 				else {
 					clickedLetter->BackColor = System::Drawing::Color::LightGreen;
 				}
+
 				clickedLetter->IsHighlighted = false;
 
+				// Kalau button nya gajadi di higlight, hurufnya dihapus dari highlightedLetters
 				highlightedLetters = highlightedLetters->Replace(clickedLetter->Text, "");
 			}
 
 			this->Text = highlightedLetters;
 		}
 
+		// Void buat ngecompare
 		void CheckForWords() {
+			// Nah ini function Find buat nyari kata yg dihighlight ada atau gak di BST
 			String^ wordToCheck = hiddens->find(highlightedLetters);
 
+			// Kalau ternyata ketemu baru jalanin ini
 			bool duplicate = false;
 			if (wordToCheck != nullptr) {
+				// For ini buat ngecek duplikat
 				for each (String ^ foundWord in foundWords) {
 					if (foundWord == wordToCheck) {
 						duplicate = true;
 					}
 				}
 
+				// Kalau ga duplikat baru dianggap ketemu
 				if (duplicate == false) {
 					wordFound(wordToCheck);
 					//MessageBox::Show("Found: " + highlightedLetters);
 				}
+
+				// Kalau ternyata duplikat nanti muncul warning
 				else {
 					for (int i = 0; i < puzzleGrid->GetLength(0); i++) {
 						for (int j = 0; j < puzzleGrid->GetLength(1); j++) {
@@ -434,11 +426,14 @@ namespace tts {
 			}
 		}
 
+		// Void buat kalau ada kata yang ketemu
 		void wordFound(String^ word) {
-			foundWords->Add(word);
-			lbHiddenWords->Items->Remove(word);
-			lbFoundWords->Items->Add(word);
+			foundWords->Add(word);					// 1. Si word ini dimasukin List dlu
+			lbHiddenWords->Items->Remove(word);		// 2. Trus dihilangin dari listbox yang atas
+			lbFoundWords->Items->Add(word);			// 3. Trus dipindah ke listbox yang bawah
 
+
+			// Nanti button-button nya ganti warna ke LightGreen
 			for (int i = 0; i < puzzleGrid->GetLength(0); i++) {
 				for (int j = 0; j < puzzleGrid->GetLength(1); j++) {
 					if (puzzleGrid[i, j]->IsHighlighted) {
@@ -448,32 +443,35 @@ namespace tts {
 				}
 			}
 
+
+			// Pengecekan gameover kalau jumlah foundWords udah sesuai
 			if (foundWords->Count == hiddenWords->Count) {
-				timer1->Stop();
+				timer1->Stop();		// timer distop
+
+				// Ngitung score pake rumus-rumusan wkwkwk
 				if (seconds < 40)
 					score = 100 - seconds * seconds / (60 - seconds);
 				else
 					score = 10;
 
-				// 
+
+				// Deklarasi form baru buat nge-input nama & nampilin skor
 				FormInputName^ baru = gcnew FormInputName(score);
 				baru->ShowDialog();
 				this->player_name = baru->name;
 
-				// Show a message box and capture the user's response
+				// Popup gameover & milih lanjut atau stop
 				System::Windows::Forms::DialogResult result = MessageBox::Show("Do you want to play again?", "Game Over", MessageBoxButtons::YesNo, MessageBoxIcon::Question);
 
-				// Process the user's response
+				// Kalau dipilih Yes boolean nya jadi true
 				if (result == System::Windows::Forms::DialogResult::Yes) {
-					// User clicked Yes
 					this->playAgain = true;
 				}
 				else {
-					// User clicked No or closed the dialog
 					this->playAgain = false;
 				}
-				//MessageBox::Show(player_name);
-				//MessageBox::Show(score->ToString());
+
+
 				this->Close();
 			}
 		}
@@ -504,13 +502,15 @@ namespace tts {
 
 		}
 #pragma endregion
+
+		// Void buat ngitung detik si timer
 	private: System::Void timer1_Tick(System::Object^ sender, System::EventArgs^ e) {
 		seconds++;
+
 		if (seconds < 40)
 			this->Text = (100 - seconds * seconds / (60 - seconds)).ToString();
 		else
 			this->Text = (10).ToString();
-		//TimeSpan elapsed = timer1.`
 	}
 	};
 }

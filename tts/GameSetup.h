@@ -17,6 +17,7 @@ namespace tts {
 	public ref class GameSetup : public System::Windows::Forms::Form
 	{
 	public:
+		// Deklarasi nama & score supaya bisa diambil dari form StartMenu
 		int^ score = 0;
 		String^ player_name = "";
 
@@ -194,12 +195,13 @@ namespace tts {
 		}
 #pragma endregion
 		/*
-		* Function untuk pindah ke form baru
+		* Function buat pindah ke form baru
 		*/
 	private: System::Void btnStart_Click(System::Object^ sender, System::EventArgs^ e) {
-		// Form1 adalah nama class form barunya yang kita deklarasi
-		// gcnew digunakan untuk membuat object baru dari class Form1
-		// difficulty dan category adalah parameter yang dipassing ke constructor Form1
+		// Form1 : nama class form barunya yang kita deklarasi
+		// gcnew dipake buat bikin object baru dari class Form1
+
+		// dibikin do while supaya ngeloop kalau user pilih main lagi
 		Form1^ baru;
 		do
 		{

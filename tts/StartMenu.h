@@ -22,6 +22,7 @@ namespace tts {
 	public ref class StartMenu : public System::Windows::Forms::Form
 	{
 	public:
+		// deklarasi & bikin HashMap ukuran 20
 		HashMap* scores = new HashMap(20);
 		StartMenu(void)
 		{
@@ -118,12 +119,13 @@ namespace tts {
 
 		}
 #pragma endregion
+
+		//Buat kalau klik play game
 	private: System::Void btnPlay_Click(System::Object^ sender, System::EventArgs^ e) {
+		// deklarasi form atau windows baru supaya dimunculin
 		GameSetup^ baru = gcnew GameSetup();
 		baru->ShowDialog();
 
-		//MessageBox::Show(baru->score->ToString());
-		//MessageBox::Show(baru->player_name);
 
 		if (baru->score != 0 && baru->player_name != "") {
 			// Ambil name dan score player
@@ -135,22 +137,15 @@ namespace tts {
 			std::string name = marshal_as<std::string>(current_name);
 			int score = (int)current_score;
 
-			//MessageBox::Show("Name: " + current_name + "\nScore: " + current_score);
-
-			//HashMap scores(20);
-			//scores->put("Bob", 100);
+			// Nama & scorenya dimasukin Hashmap
 			scores->put(name, score);
-
-			// Displaying scores
-			//std::vector<Entry> entries = scores->get_all();
-			//for (const Entry& entry : entries) {
-			//	String^ message = gcnew String(("Key: " + entry.key + ", Value: " + std::to_string(entry.value)).c_str());
-			//	MessageBox::Show(message);
-			//}
 		}
 
 	}
+
+		   //Buat kalau klik highscore
 	private: System::Void btnHighscore_Click(System::Object^ sender, System::EventArgs^ e) {
+		// Bikin form baru juga
 		FormHighscore^ baru = gcnew FormHighscore(scores);
 		baru->ShowDialog();
 	}
