@@ -21,6 +21,10 @@ namespace tts {
 	{
 	public:
 		int^ score;
+		int seconds;
+		bool playAgain;
+	private: System::Windows::Forms::Timer^ timer1;
+	public:
 		String^ player_name;
 
 		ref class Node {
@@ -124,6 +128,11 @@ namespace tts {
 			this->difficulty = difficulty;
 			this->category = category;
 
+			this->score = 0;
+			this->player_name = "";
+			this->seconds = 0;
+			this->playAgain = false;
+
 			InitializeComponent();
 			Text = "Word Puzzle Game";
 			InitializeHiddenWords();
@@ -131,6 +140,8 @@ namespace tts {
 			InitializeLB();
 
 			Size = System::Drawing::Size(50 * puzzleGrid->GetLength(0) + 125 + 125, 50 * puzzleGrid->GetLength(1) + 125);
+
+			timer1->Start();
 		}
 
 	protected:
@@ -141,15 +152,18 @@ namespace tts {
 				delete components;
 			}
 		}
+	private: System::ComponentModel::IContainer^ components;
+	protected:
 
 	private:
-		System::ComponentModel::Container^ components;
+
 		array<PuzzleLetter^, 2>^ puzzleGrid;
 		List<String^>^ hiddenWords;
 		BST^ hiddens;
 		String^ difficulty;
 		String^ category;
 		ListBox^ lbFoundWords;
+		ListBox^ lbHiddenWords;
 
 	private:
 		System::Windows::Forms::FontDialog^ fontDialog1;
@@ -325,9 +339,20 @@ namespace tts {
 			int starting_x = 50 * puzzleGrid->GetLength(0) + 75;
 			int starting_y = 50;
 
+			// List kata yang mau dicari
+			lbHiddenWords = gcnew ListBox();
+			lbHiddenWords->Location = Point(starting_x, starting_y);
+			lbHiddenWords->Size = System::Drawing::Size(100, 15 * hiddenWords->Count);
+			lbHiddenWords->Visible = true;
+			lbHiddenWords->Enabled = false;
+			lbHiddenWords->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
+			Controls->Add(lbHiddenWords);
+			lbHiddenWords->BringToFront();
+
+			// List kata yg udah ketemu
 			lbFoundWords = gcnew ListBox();
-			lbFoundWords->Location = Point(starting_x, starting_y);
-			lbFoundWords->Size = System::Drawing::Size(100, 12 * hiddenWords->Count);
+			lbFoundWords->Location = Point(starting_x, starting_y + (14 * hiddenWords->Count) + 25);
+			lbFoundWords->Size = System::Drawing::Size(100, 15 * hiddenWords->Count);
 			lbFoundWords->Visible = true;
 			lbFoundWords->Enabled = false;
 			lbFoundWords->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
@@ -335,7 +360,7 @@ namespace tts {
 			lbFoundWords->BringToFront();
 
 			for each (String ^ word in hiddenWords) {
-				/*lbFoundWords->Items->Add(word);*/
+				lbHiddenWords->Items->Add(word);
 			}
 		}
 
@@ -343,12 +368,12 @@ namespace tts {
 			PuzzleLetter^ clickedLetter = dynamic_cast<PuzzleLetter^>(sender);
 
 			if (!clickedLetter->IsHighlighted) {
-				clickedLetter->BackColor = System::Drawing::Color::Green;
+				clickedLetter->BackColor = System::Drawing::Color::LightSalmon;
 				clickedLetter->IsHighlighted = true;
 				CheckForWords();
 			}
 			else {
-				clickedLetter->BackColor = System::Drawing::Color::White;
+				clickedLetter->BackColor = System::Drawing::Color::LightSalmon;
 				clickedLetter->IsHighlighted = false;
 			}
 		}
@@ -366,45 +391,70 @@ namespace tts {
 
 			String^ wordToCheck = hiddens->find(highlightedLetters);
 
+			bool duplicate = false;
 			if (wordToCheck != nullptr) {
-				wordFound(wordToCheck);
-				MessageBox::Show("Found: " + highlightedLetters);
+				for each (String ^ foundWord in foundWords) {
+					if (foundWord == wordToCheck) {
+						duplicate = true;
+					}
+				}
+
+				if (duplicate == false) {
+					wordFound(wordToCheck);
+					MessageBox::Show("Found: " + highlightedLetters);
+				}
+				else {
+					for (int i = 0; i < puzzleGrid->GetLength(0); i++) {
+						for (int j = 0; j < puzzleGrid->GetLength(1); j++) {
+							if (puzzleGrid[i, j]->IsHighlighted) {
+								puzzleGrid[i, j]->IsHighlighted = false;
+								puzzleGrid[i, j]->BackColor = System::Drawing::Color::LightGreen;
+							}
+						}
+					}
+
+					MessageBox::Show(wordToCheck + " has already been found!");
+				}
 			}
 		}
 
 		void wordFound(String^ word) {
 			foundWords->Add(word);
+			lbHiddenWords->Items->Remove(word);
 			lbFoundWords->Items->Add(word);
 
 			for (int i = 0; i < puzzleGrid->GetLength(0); i++) {
 				for (int j = 0; j < puzzleGrid->GetLength(1); j++) {
 					if (puzzleGrid[i, j]->IsHighlighted) {
 						puzzleGrid[i, j]->IsHighlighted = false;
-						puzzleGrid[i, j]->BackColor = System::Drawing::Color::LightSalmon;
+						puzzleGrid[i, j]->BackColor = System::Drawing::Color::LightGreen;
 					}
 				}
 			}
 
 			if (foundWords->Count == hiddenWords->Count) {
+				timer1->Stop();
+				score = seconds;
 
-				player_name = "Player 1";
-				score = 10;
+				// 
+				FormInputName^ baru = gcnew FormInputName();
+				baru->ShowDialog();
+				this->player_name = baru->name;
 
 				// Show a message box and capture the user's response
-				System::Windows::Forms::DialogResult result = MessageBox::Show("Do you want to continue?", "Confirmation", MessageBoxButtons::YesNo, MessageBoxIcon::Question);
+				System::Windows::Forms::DialogResult result = MessageBox::Show("Do you want to play again?", "Game Over", MessageBoxButtons::YesNo, MessageBoxIcon::Question);
 
 				// Process the user's response
 				if (result == System::Windows::Forms::DialogResult::Yes) {
 					// User clicked Yes
-					Close();
+					this->playAgain = true;
 				}
 				else {
-					FormInputName^ baru = gcnew FormInputName();
-					baru->ShowDialog();
 					// User clicked No or closed the dialog
-					Close();
-					this->Name = baru->name;
+					this->playAgain = false;
 				}
+				//MessageBox::Show(player_name);
+				//MessageBox::Show(score->ToString());
 				this->Close();
 			}
 		}
@@ -412,47 +462,33 @@ namespace tts {
 #pragma region Windows Form Designer generated code
 		void InitializeComponent(void)
 		{
-
-
-
+			this->components = (gcnew System::ComponentModel::Container());
 			this->fontDialog1 = (gcnew System::Windows::Forms::FontDialog());
+			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
 			this->SuspendLayout();
+			// 
+			// timer1
+			// 
+			this->timer1->Interval = 1000;
+			this->timer1->Tick += gcnew System::EventHandler(this, &Form1::timer1_Tick);
 			// 
 			// Form1
 			// 
-			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
+			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(484, 461);
+			this->ClientSize = System::Drawing::Size(726, 709);
+			this->Margin = System::Windows::Forms::Padding(4, 5, 4, 5);
 			this->Name = L"Form1";
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
 			this->Text = L"Form1";
 			this->ResumeLayout(false);
-			//BST^ tree = gcnew BST();
-
-
-			//cara insert
-			//tree->insert("apple");
-			//tree->insert("banana");
-			//tree->insert("orange");
-			//tree->insert("grape");
-			//tree->insert("kiwi");
-
-			//display semua dengan urutan inorderTraversal
-			//tree->displayInOrder();
-
-			//find di dalam tree
-			/*String^ x = "oranges";
-			Node^ foundNode = tree->find(x);
-
-			if (foundNode != nullptr) {
-				MessageBox::Show("Found: " + foundNode->key);
-			}
-			else {
-				MessageBox::Show(x + " not found.");
-			}*/
 
 		}
 #pragma endregion
+	private: System::Void timer1_Tick(System::Object^ sender, System::EventArgs^ e) {
+		seconds++;
+		//TimeSpan elapsed = timer1.`
+	}
 	};
 }
 

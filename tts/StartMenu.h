@@ -122,31 +122,37 @@ namespace tts {
 		GameSetup^ baru = gcnew GameSetup();
 		baru->ShowDialog();
 
-		// Ambil name dan score player
-		// Variabel di passing dari Form1 ke GameSetup ke StartMenu
-		int^ current_score = baru->score;
-		String^ current_name = baru->player_name;
+		//MessageBox::Show(baru->score->ToString());
+		//MessageBox::Show(baru->player_name);
 
-		// Convert String^ ke std::string
-		std::string name = marshal_as<std::string>(current_name);
-		int score = (int)current_score;
+		if (baru->score != 0 && baru->player_name != "") {
+			// Ambil name dan score player
+			// Variabel di passing dari Form1 ke GameSetup ke StartMenu
+			int^ current_score = baru->score;
+			String^ current_name = baru->player_name;
 
-		//MessageBox::Show("Name: " + current_name + "\nScore: " + current_score);
+			// Convert String^ ke std::string
+			std::string name = marshal_as<std::string>(current_name);
+			int score = (int)current_score;
 
-		//HashMap scores(20);
-		scores->put("Bob", 100);
-		scores->put(name, score);
+			//MessageBox::Show("Name: " + current_name + "\nScore: " + current_score);
 
-		// Displaying scores
-		std::vector<Entry> entries = scores->get_all();
-		for (const Entry& entry : entries) {
-			String^ message = gcnew String(("Key: " + entry.key + ", Value: " + std::to_string(entry.value)).c_str());
-			MessageBox::Show(message);
+			//HashMap scores(20);
+			scores->put("Bob", 100);
+			scores->put(name, score);
+
+			// Displaying scores
+			std::vector<Entry> entries = scores->get_all();
+			for (const Entry& entry : entries) {
+				String^ message = gcnew String(("Key: " + entry.key + ", Value: " + std::to_string(entry.value)).c_str());
+				MessageBox::Show(message);
+			}
 		}
+
 	}
 	private: System::Void btnHighscore_Click(System::Object^ sender, System::EventArgs^ e) {
 		FormHighscore^ baru = gcnew FormHighscore();
 		baru->ShowDialog();
 	}
-};
+	};
 }

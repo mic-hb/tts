@@ -17,8 +17,8 @@ namespace tts {
 	public ref class GameSetup : public System::Windows::Forms::Form
 	{
 	public:
-		int^ score;
-		String^ player_name;
+		int^ score = 0;
+		String^ player_name = "";
 
 		GameSetup(void)
 		{
@@ -200,12 +200,18 @@ namespace tts {
 		// Form1 adalah nama class form barunya yang kita deklarasi
 		// gcnew digunakan untuk membuat object baru dari class Form1
 		// difficulty dan category adalah parameter yang dipassing ke constructor Form1
-		Form1^ baru = gcnew Form1(difficulty, category);
-		baru->ShowDialog();
-		this->score = baru->score;
-		this->player_name = baru->player_name;
+		Form1^ baru;
+		do
+		{
+			baru = gcnew Form1(difficulty, category);
+			baru->ShowDialog();
+			this->score = baru->score;
+			this->player_name = baru->player_name;
 
-		// TODO: simpan score ke HashMap
+		} while (baru->playAgain == true);
+
+
+		this->Close();
 	}
 
 		   /*
