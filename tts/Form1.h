@@ -164,6 +164,7 @@ namespace tts {
 		String^ category;
 		ListBox^ lbFoundWords;
 		ListBox^ lbHiddenWords;
+		String^ highlightedLetters = "";
 
 	private:
 		System::Windows::Forms::FontDialog^ fontDialog1;
@@ -205,7 +206,9 @@ namespace tts {
 			}
 
 			// Random penempatan setiap kata di array hiddenWords
-			for each (String ^ word in hiddenWords) {
+			for (int i = hiddenWords->Count - 1; i >= 0; i--) {
+				//for each (String ^ word in hiddenWords) {
+				String^ word = hiddenWords[i];
 				int wordLength = word->Length;
 
 				int x, y, direction;
@@ -241,7 +244,12 @@ namespace tts {
 					}
 
 					tries++;
-					if (tries == 100) goto nextWord;
+					if (tries == 100)
+					{
+						MessageBox::Show(word);
+						hiddenWords->RemoveAt(i);
+						goto nextWord;
+					}
 				} while (!isValid);
 
 				// Kalau udah valid, masukin huruf pertamanya ke puzzle
@@ -368,27 +376,33 @@ namespace tts {
 			PuzzleLetter^ clickedLetter = dynamic_cast<PuzzleLetter^>(sender);
 
 			if (!clickedLetter->IsHighlighted) {
-				clickedLetter->BackColor = System::Drawing::Color::LightSalmon;
+				if (clickedLetter->BackColor == System::Drawing::Color::White)
+					clickedLetter->BackColor = System::Drawing::Color::LightSalmon;
+				else
+					clickedLetter->BackColor = System::Drawing::Color::Salmon;
+
 				clickedLetter->IsHighlighted = true;
+
+				highlightedLetters += clickedLetter->Text;
+
 				CheckForWords();
 			}
 			else {
-				clickedLetter->BackColor = System::Drawing::Color::LightSalmon;
+				if (clickedLetter->BackColor == System::Drawing::Color::LightSalmon) {
+					clickedLetter->BackColor = System::Drawing::Color::White;
+				}
+				else {
+					clickedLetter->BackColor = System::Drawing::Color::LightGreen;
+				}
 				clickedLetter->IsHighlighted = false;
+
+				highlightedLetters = highlightedLetters->Replace(clickedLetter->Text, "");
 			}
+
+			this->Text = highlightedLetters;
 		}
 
 		void CheckForWords() {
-			String^ highlightedLetters = "";
-
-			for (int i = 0; i < puzzleGrid->GetLength(0); i++) {
-				for (int j = 0; j < puzzleGrid->GetLength(1); j++) {
-					if (puzzleGrid[i, j]->IsHighlighted) {
-						highlightedLetters += puzzleGrid[i, j]->Text;
-					}
-				}
-			}
-
 			String^ wordToCheck = hiddens->find(highlightedLetters);
 
 			bool duplicate = false;
@@ -401,7 +415,7 @@ namespace tts {
 
 				if (duplicate == false) {
 					wordFound(wordToCheck);
-					MessageBox::Show("Found: " + highlightedLetters);
+					//MessageBox::Show("Found: " + highlightedLetters);
 				}
 				else {
 					for (int i = 0; i < puzzleGrid->GetLength(0); i++) {
@@ -415,6 +429,8 @@ namespace tts {
 
 					MessageBox::Show(wordToCheck + " has already been found!");
 				}
+
+				highlightedLetters = "";
 			}
 		}
 
